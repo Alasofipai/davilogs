@@ -1,0 +1,202 @@
+/* Home: vertical stage, slides and map */
+.svHome .stage__track {
+  height: 100%;
+  transition: transform 0.7s cubic-bezier(0.77, 0, 0.18, 1);
+  will-change: transform;
+}
+
+.svHome .panel {
+  position: relative;
+  height: 100vh;
+  background-repeat: no-repeat;
+  background-position: 50% 50%;
+  background-size: cover;
+}
+
+.svHome .panel--super {
+  background-image: url('../images/hero-superapp.webp');
+}
+
+.svHome .panel--account {
+  background-image: url('../images/hero-account.webp');
+}
+
+.svHome .panel--promos {
+  background-image: url('../images/hero-promos.webp');
+}
+
+.svHome .panel--solutions {
+  background-image: url('../images/hero-solutions.webp');
+}
+
+.svHome .panel--agencies {
+  background: var(--paper);
+}
+
+.svHome .panel__cta {
+  position: absolute;
+  left: calc(50% - 580px);
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  height: 40px;
+  padding: 0 14px;
+  border-radius: 10px;
+  background: var(--brand);
+  box-shadow: inset 0 -4px 0 0 var(--brand-deep);
+  color: var(--paper);
+  font-family: var(--font-cond-bold);
+  font-size: 18px;
+  font-weight: 400;
+  line-height: 20.7px;
+  white-space: nowrap;
+}
+
+.svHome .panel__cta:hover {
+  background: var(--brand-deep);
+}
+
+.svHome .panel__cta img {
+  width: 18px;
+  height: 18px;
+}
+
+.svHome .panel--super .panel__cta {
+  top: 47%;
+}
+
+.svHome .panel--account .panel__cta {
+  top: 53.67%;
+}
+
+.svHome .panel--promos .panel__cta {
+  top: 49.22%;
+}
+
+.svHome .panel--solutions .panel__cta {
+  top: 51.44%;
+}
+
+.svHome .panel__eyebrow,
+.svHome .panel__headline {
+  display: none;
+}
+
+.svHome .panel__map {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: calc(100% - var(--foot-h));
+  object-fit: cover;
+  object-position: 50% 50%;
+}
+
+.svHome .panel__filters {
+  position: absolute;
+  left: 12px;
+  top: 180px;
+  z-index: 2;
+  width: 120px;
+  height: 37px;
+  padding: 8px 15px;
+  border-radius: 5px;
+  background: var(--brand);
+  box-shadow: 0 4px 0 0 var(--brand-shadow);
+  color: var(--paper);
+  font-family: var(--font-cond-bold);
+  font-size: 18px;
+  line-height: 20.7px;
+  text-align: center;
+}
+
+@media (max-width: 1024px) {
+  .svHome .panel--super {
+    background-image: url('../images/hero-superapp.webp');
+  }
+
+  .svHome .panel__cta {
+    left: 20px;
+  }
+
+  .svHome .panel--super .panel__cta {
+    top: 44.43%;
+  }
+
+  .svHome .panel--account .panel__cta {
+    top: 48.22%;
+  }
+
+  .svHome .panel--promos .panel__cta {
+    top: 45.62%;
+  }
+
+  .svHome .panel--solutions .panel__cta {
+    top: 46.8%;
+  }
+
+  .svHome .panel__eyebrow {
+    position: absolute;
+    left: 20px;
+    display: block;
+    color: var(--paper);
+    font-family: var(--font-cond-thin);
+    font-size: 25px;
+    font-weight: 400;
+    line-height: 20px;
+  }
+
+  .svHome .panel__headline {
+    position: absolute;
+    left: 20px;
+    display: block;
+    color: var(--paper);
+    font-family: var(--font-cond-bold);
+    font-size: 45px;
+    font-weight: 400;
+    line-height: 45px;
+  }
+
+  .svHome .panel--account .panel__eyebrow {
+    top: 36.37%;
+  }
+
+  .svHome .panel--account .panel__headline {
+    top: 38.74%;
+  }
+
+  .svHome .panel--promos .panel__eyebrow {
+    top: 39.1%;
+  }
+
+  .svHome .panel--solutions .panel__eyebrow {
+    top: 37.91%;
+    width: 180px;
+  }
+
+  .svHome .panel__map {
+    height: calc(100% - 90px);
+  }
+
+  .svHome .panel__filters {
+    top: 20px;
+  }
+}
+
+@media (max-width: 767px) {
+  .svHome .panel--super {
+    background-image: url('../images/hero-superapp-mobile.webp');
+  }
+
+  .svHome .panel--account {
+    background-image: url('../images/hero-account-mobile.webp');
+  }
+
+  .svHome .panel--promos {
+    background-image: url('../images/hero-promos-mobile.webp');
+  }
+
+  .svHome .panel--solutions {
+    background-image: url('../images/hero-solutions-mobile.webp');
+  }
+}

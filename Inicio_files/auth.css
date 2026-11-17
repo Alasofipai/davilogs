@@ -1,0 +1,301 @@
+/* Authentication page */
+.svAuth {
+  position: relative;
+  width: 100%;
+  background: var(--login-brand);
+}
+
+.svAuth .authBackdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  background: url('login-backdrop.webp') no-repeat 0 48px / cover;
+}
+
+.svAuth .authHeader {
+  position: relative;
+  z-index: 2;
+  height: 50px;
+  background: var(--login-brand);
+}
+
+.svAuth .authHeader__brand {
+  position: absolute;
+  left: 95px;
+  top: 4px;
+  width: 238px;
+  height: 43px;
+  overflow: hidden;
+  text-indent: -9999px;
+  background: url('brand-wordmark-login.webp') no-repeat 0 0 / 238px 43px;
+}
+
+.svAuth .authHeader__lang {
+  position: absolute;
+  top: 20px;
+  right: 88px;
+  display: flex;
+  align-items: flex-start;
+  gap: 4px;
+  color: var(--paper);
+  font-family: var(--font-ui);
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 13.6px;
+}
+
+.svAuth .authHeader__lang a:hover {
+  text-decoration: underline;
+}
+
+.svAuth .authHeader__langIcon {
+  font-family: var(--font-icon);
+  font-weight: 900;
+  font-style: normal;
+  font-size: 13.2px;
+  line-height: 13.6px;
+}
+
+.svAuth .authHeader__langIcon::before {
+  content: '\f1ab';
+}
+
+.svAuth .authCard {
+  position: absolute;
+  left: 50%;
+  top: 150px;
+  z-index: 1;
+  width: 500px;
+  height: 460.6px;
+  margin-left: -250px;
+  font-family: var(--font-ui);
+}
+
+.svAuth .authCard__title {
+  position: absolute;
+  left: 17px;
+  top: 14px;
+  width: 470px;
+  color: var(--ink);
+  font-family: 'DvCond', var(--font-ui);
+  font-size: 37.5333px;
+  font-weight: 400;
+  line-height: normal;
+  text-align: center;
+}
+
+.svAuth .authField {
+  position: absolute;
+  border: 0;
+  border-bottom: 1.6px solid var(--login-brand);
+  background: transparent;
+  color: var(--ink);
+  font-family: var(--font-ui);
+  font-size: 13.3333px;
+  line-height: normal;
+  outline: none;
+}
+
+.svAuth .authField::placeholder {
+  color: var(--ink);
+  font-family: 'DvCond', var(--font-ui);
+  font-size: 16px;
+}
+
+.svAuth .authField--id {
+  left: 170px;
+  top: 144.6px;
+  width: 185px;
+  height: 27.6px;
+  padding: 5px 5px 0;
+}
+
+.svAuth .authField--pass {
+  left: 166px;
+  top: 144.6px;
+  width: 206px;
+  height: 27.6px;
+  padding: 5px 5px 0;
+}
+
+.svAuth .authAvatar {
+  position: absolute;
+  left: 126px;
+  top: 138px;
+  width: 41px;
+  height: 41px;
+  border-radius: 20px;
+  background: url('password-avatar.webp') no-repeat 0 0 / 41px 41px;
+}
+
+.svAuth .authAsterisk {
+  position: absolute;
+  left: 381px;
+  top: 148px;
+  color: var(--login-red);
+  font-family: var(--font-ui);
+  font-size: 14px;
+  line-height: 16px;
+}
+
+.svAuth .authButton {
+  position: absolute;
+  width: 139px;
+  height: 34px;
+  border: 0;
+  border-radius: 99px;
+  color: var(--paper);
+  font-family: var(--font-ui);
+  font-size: 13.3333px;
+  font-weight: 400;
+  line-height: normal;
+  text-align: center;
+  cursor: pointer;
+}
+
+.svAuth .authButton--primary {
+  background: var(--login-red);
+}
+
+.svAuth .authButton--ghost {
+  background: var(--login-gray);
+}
+
+.svAuth .authButton--id {
+  left: 190px;
+  top: 250px;
+}
+
+.svAuth .authButton--back {
+  left: 109px;
+  top: 249px;
+}
+
+.svAuth .authButton--login {
+  left: 271px;
+  top: 249px;
+}
+
+.svAuth .authLinks {
+  position: absolute;
+  left: 0;
+  top: 324.8px;
+  display: flex;
+  gap: 29px;
+  width: 500px;
+  height: 18px;
+  color: var(--login-red);
+  font-family: 'arial', var(--font-ui);
+  font-size: 12px;
+  line-height: 18px;
+  white-space: nowrap;
+}
+
+.svAuth .authLinks li {
+  display: inline;
+  flex: 0 0 auto;
+  margin: 0;
+}
+
+.svAuth .authLinks a {
+  display: inline;
+  color: var(--login-red);
+  font-family: 'arial', var(--font-ui);
+  font-size: 12px;
+  text-align: center;
+}
+
+.svAuth .authLegal {
+  position: absolute;
+  left: 0;
+  top: 371.8px;
+  width: 488px;
+  color: var(--ink-faint);
+  font-family: var(--font-ui);
+  font-size: 12px;
+  line-height: normal;
+}
+
+.svAuth .authLegal a {
+  color: var(--login-brand);
+}
+
+.svAuth .authFooter {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: -12px;
+  z-index: 3;
+  height: 48px;
+  background: var(--ink);
+  color: var(--paper);
+  font-family: var(--font-ui);
+  font-size: 11px;
+}
+
+.svAuth .authFooter__inner {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px 40px 0;
+  line-height: 12px;
+}
+
+.svAuth .authError {
+  position: absolute;
+  left: 170px;
+  top: 180px;
+  width: 300px;
+  padding: 8px 10px;
+  border: 1px solid #ff000033;
+  border-radius: 5px;
+  background: rgb(241, 241, 241);
+  color: var(--login-brand);
+  font-family: var(--font-ui);
+  font-size: 12px;
+  line-height: 16px;
+}
+
+.svAuth .authLoading {
+  position: fixed;
+  inset: 0;
+  z-index: 9;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.94);
+}
+
+.svAuth .authLoading.is-hidden {
+  display: none !important;
+}
+
+.svAuth .authLoading__box {
+  text-align: center;
+  color: var(--ink);
+  font-family: var(--font-ui);
+}
+
+.svAuth .authLoading__spinner {
+  display: block;
+  width: 46px;
+  height: 46px;
+  margin: 0 auto 14px;
+  border: 5px solid rgb(236, 236, 236);
+  border-top-color: var(--login-red);
+  border-radius: 50%;
+  animation: authSpin 0.9s linear infinite;
+}
+
+.svAuth .authLoading__text {
+  font-size: 14px;
+}
+
+@keyframes authSpin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.svAuth .is-hidden {
+  display: none !important;
+}

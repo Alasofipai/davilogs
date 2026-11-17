@@ -1,0 +1,265 @@
+/* Home: masthead, subbar and compact hamburger */
+.svHome .topBar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: var(--topbar-h);
+  background: var(--brand);
+  color: var(--paper);
+  z-index: 120;
+}
+
+.svHome .topBar__inner {
+  position: relative;
+  width: var(--shell-w);
+  max-width: 100%;
+  height: 100%;
+  margin: 0 auto;
+  padding: 0 20px;
+  overflow: hidden;
+}
+
+.svHome .topBar__brand {
+  display: block;
+  float: left;
+  width: 288px;
+  height: 28px;
+  margin-top: 30px;
+  overflow: hidden;
+  text-indent: -9999px;
+  background: url('../images/brand-wordmark.webp') no-repeat 0 0 / 288px 28px;
+}
+
+.svHome .topBar__nav {
+  float: left;
+  width: 40%;
+  height: 25px;
+  margin-top: 34px;
+}
+
+.svHome .topBar__list {
+  display: table;
+  width: 100%;
+  table-layout: fixed;
+}
+
+.svHome .topBar__item {
+  position: relative;
+  display: table-cell;
+  width: auto;
+  vertical-align: top;
+}
+
+.svHome .topBar__item:nth-child(1) {
+  width: 166px;
+}
+
+.svHome .topBar__item:nth-child(2) {
+  width: 160px;
+}
+
+.svHome .topBar__item:nth-child(3) {
+  width: 138px;
+}
+
+.svHome .topBar__link {
+  position: relative;
+  display: block;
+  height: 24.7px;
+  padding: 0;
+  color: var(--paper);
+  font-size: 18px;
+  line-height: 20.7px;
+  text-align: center;
+  white-space: nowrap;
+  text-transform: uppercase;
+}
+
+.svHome .topBar__ico {
+  display: inline-block;
+  width: 28px;
+  height: 20px;
+  margin-right: 10px;
+  vertical-align: middle;
+  background-repeat: no-repeat;
+  background-position: 0 0;
+  background-size: contain;
+}
+
+.svHome .topBar__ico--people {
+  background-image: url('../images/nav-people.webp');
+}
+
+.svHome .topBar__ico--business {
+  width: 23px;
+  background-image: url('../images/nav-business.webp');
+}
+
+.svHome .topBar__ico--shield {
+  width: 18px;
+  height: 18px;
+  font-family: var(--font-icon);
+  font-size: 18px;
+  font-weight: 900;
+  line-height: 18px;
+  color: var(--paper);
+}
+
+.svHome .topBar__notch {
+  position: absolute;
+  left: 70px;
+  top: 32px;
+  width: 44px;
+  height: 24px;
+  pointer-events: none;
+}
+
+.svHome .topBar__corp {
+  float: left;
+  width: 174px;
+  margin-top: 15px;
+  margin-left: 58px;
+  padding-left: 10px;
+}
+
+.svHome .topBar__corp li {
+  height: 21px;
+}
+
+.svHome .topBar__corp a {
+  display: block;
+  font-size: 14px;
+  line-height: 21px;
+  color: var(--paper);
+  white-space: nowrap;
+}
+
+.svHome .topBar__corp a:hover {
+  text-decoration: underline;
+}
+
+.svHome .topBar__portal {
+  position: absolute;
+  top: 0;
+  right: 20px;
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  width: 160px;
+  height: 90px;
+  padding: 10px 0 0 19px;
+  background: var(--portal);
+  color: var(--paper);
+  font-family: var(--font-cond-bold);
+  font-size: 18px;
+  line-height: 22px;
+  text-align: left;
+  text-transform: uppercase;
+}
+
+.svHome .topBar__portal:hover {
+  background: rgb(72, 72, 72);
+}
+
+.svHome .topBar__portal svg {
+  flex: 0 0 16px;
+  width: 16px;
+  height: 20px;
+  margin-top: 2px;
+}
+
+.svHome .topBar__portal span {
+  display: block;
+  width: 116px;
+}
+
+.svHome .subBar {
+  position: absolute;
+  top: var(--topbar-h);
+  left: 0;
+  right: 0;
+  height: var(--subbar-h);
+  background: var(--paper);
+  color: var(--paper);
+  z-index: 110;
+}
+
+.svHome .subBar__inner {
+  position: relative;
+  width: var(--shell-w);
+  max-width: 100%;
+  height: var(--subbar-h);
+  margin: 0 auto;
+}
+
+.svHome .subBar__tab {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 180px;
+  height: 84px;
+  background: url('../images/menu-tab-off.webp') no-repeat 0 0 / 173px 82px;
+}
+
+.svHome .subBar__daviturno {
+  position: absolute;
+  left: 840px;
+  top: 11px;
+  display: block;
+  width: 132px;
+  height: 25px;
+}
+
+.svHome .subBar__attention {
+  position: absolute;
+  left: 972px;
+  top: 0;
+  display: block;
+  width: 168px;
+  height: 46px;
+}
+
+.svHome .subBar__search {
+  position: absolute;
+  left: 1159px;
+  top: 16px;
+  width: 16px;
+  height: 16px;
+  color: rgb(66, 66, 66);
+}
+
+.svHome .subBar__search svg {
+  width: 16px;
+  height: 16px;
+}
+
+.svHome .hamburger {
+  display: none;
+}
+
+@media (max-width: 1024px) {
+  .svHome .topBar,
+  .svHome .subBar {
+    display: none;
+  }
+
+  .svHome .hamburger {
+    position: fixed;
+    top: 12px;
+    right: 11px;
+    z-index: 140;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 42px;
+    height: 35px;
+    border-radius: 2px;
+    background: var(--brand);
+  }
+
+  .svHome .hamburger svg {
+    width: 18px;
+    height: 15px;
+  }
+}

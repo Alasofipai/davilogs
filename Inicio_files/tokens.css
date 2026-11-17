@@ -1,0 +1,93 @@
+@font-face {
+  font-family: 'DvCond';
+  src: url('dv-condensed.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'DvCondBold';
+  src: url('dv-condensed-bold.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'DvCondThin';
+  src: url('dv-condensed-thin.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'DvCondMedium';
+  src: url('dv-condensed-medium.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'DvCondHeavy';
+  src: url('dv-condensed-heavy.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'FaSolid';
+  src: url('fa-solid.woff2') format('woff2');
+  font-weight: 900;
+  font-style: normal;
+  font-display: block;
+}
+@font-face {
+  font-family: 'FaBrands';
+  src: url('fa-brands.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: block;
+}
+
+:root {
+  /* Colors: equivalent notations to the source (source used hex, output uses rgb). */
+  --ink: rgb(0, 0, 0);
+  --paper: rgb(255, 255, 255);
+  --brand: rgb(237, 28, 39);
+  --brand-deep: rgb(173, 0, 0);
+  --brand-shadow: rgb(198, 16, 25);
+  --brand-veil: #ed1c27ba;
+  --portal: rgb(89, 89, 89);
+  --ink-soft: rgb(34, 38, 42);
+  --ink-muted: rgb(109, 110, 114);
+  --ink-faint: rgb(147, 149, 152);
+  --login-brand: rgb(238, 28, 40);
+  --login-red: rgb(237, 28, 39);
+  --login-gray: rgb(191, 191, 191);
+  --veil: #00000099;
+  --panel-veil: #595959cc;
+  --canvas: rgb(236, 236, 236);
+
+  /* Type */
+  --font-cond: 'DvCond', 'Helvetica Neue', Arial, sans-serif;
+  --font-cond-bold: 'DvCondBold', 'Helvetica Neue', Arial, sans-serif;
+  --font-cond-thin: 'DvCondThin', 'Helvetica Neue', Arial, sans-serif;
+  --font-cond-medium: 'DvCondMedium', 'Helvetica Neue', Arial, sans-serif;
+  --font-ui: Arial, Helvetica, 'Garuda', sans-serif;
+  --font-icon: 'FaSolid';
+
+  /* Home metrics */
+  --topbar-h: 90px;
+  --subbar-h: 50px;
+  --foot-h: 50px;
+  --rail-w: 65px;
+  --shell-w: 1200px;
+
+  /* Auth metrics */
+  --auth-header-h: 50px;
+  --auth-foot-h: 48px;
+
+  /* Breakpoints (documented literals for media queries):
+     desktop shell: min-width 1025px
+     compact shell: max-width 1024px
+     mobile art: max-width 767px */
+}

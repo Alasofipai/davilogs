@@ -1,0 +1,72 @@
+/* Home: floating vertical rail */
+.svHome .railMenu {
+  position: fixed;
+  top: 142px;
+  right: 65px;
+  z-index: 90;
+  width: var(--rail-w);
+}
+
+.svHome .railMenu__item {
+  margin-bottom: 10px;
+}
+
+.svHome .railMenu__link {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  width: 65px;
+  height: 65px;
+  padding: 10px 5px 0;
+  border-radius: 10px;
+  background: var(--veil);
+  color: var(--paper);
+  text-align: center;
+}
+
+.svHome .railMenu__link:hover {
+  background: #000000b3;
+}
+
+.svHome .railMenu__link--login {
+  background: var(--brand-veil);
+}
+
+.svHome .railMenu__link--login:hover {
+  background: var(--brand);
+}
+
+.svHome .railMenu__icon {
+  font-size: 20px;
+  line-height: 20px;
+  margin-bottom: 5px;
+}
+
+.svHome .railMenu__label {
+  display: block;
+  max-width: 55px;
+  margin: 0 auto;
+  font-size: 9px;
+  line-height: 10px;
+}
+
+.svHome .railMenu__item.is-active .railMenu__link {
+  background: var(--paper);
+  color: var(--brand);
+}
+
+.svHome .railMenu__item.is-active .railMenu__link:hover {
+  background: var(--paper);
+}
+
+@media (max-width: 1024px) {
+  .svHome .railMenu {
+    top: 75px;
+    right: 19px;
+  }
+
+  .svHome .railMenu__item.is-active .railMenu__link {
+    height: 55px;
+  }
+}

